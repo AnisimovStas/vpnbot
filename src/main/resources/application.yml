@@ -1,0 +1,15 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  database-platform: org.hibernate.dialect.PostgreSQLDialect
+  show-sql: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${DEV_DB_NAME}
+    username: ${DEV_DB_USERNAME}
+    password: ${DEV_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  application:
+  name: vpnbot
+bot:
+  token: ${vpn_bot_token}

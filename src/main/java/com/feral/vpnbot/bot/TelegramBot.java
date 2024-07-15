@@ -1,6 +1,9 @@
 package com.feral.vpnbot.bot;
 
+import com.feral.vpnbot.models.User;
+import com.feral.vpnbot.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
@@ -14,11 +17,17 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
+import static com.feral.vpnbot.utils.constants.*;
+
 @Slf4j
 @Component
 public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
 
     private final TelegramClient telegramClient;
+
+    @Autowired
+    private UserRepository userRepository;
+
 
     @Value("${bot.token}")
     private String botToken;
@@ -45,17 +54,58 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
             String messageText = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
 
-            SendMessage message = SendMessage // Create a message object
-                    .builder()
-                    .chatId(chatId)
-                    .text(messageText)
-                    .build();
-            try {
-                telegramClient.execute(message); // Sending our message object to user
-            } catch (TelegramApiException e) {
-                log.error(e.getMessage());
+            switch (messageText) {
+                case "/start" -> registerUser(chatId);
+                default -> sendMessage(chatId, UNRECOGNIZED_COMMAND);
             }
+
+
         }
+    }
+
+    private void registerUser(long chatId) {
+
+        User user = userRepository.findById(chatId).orElse(null);
+
+        if (user == null) {
+            user = new User();
+            user.setId(chatId);
+            userRepository.save(user);
+            sendMessageWithMenuKeyBoard(chatId, WELCOME_MESSAGE);
+        } else {
+            sendMessageWithMenuKeyBoard(chatId, ALREADY_REGISTERED);
+        }
+
+    }
+
+
+    private void sendMessageWithMenuKeyBoard(long chatId, String text) {
+        SendMessage message = SendMessage // Create a message object
+                .builder()
+                .chatId(chatId)
+                .text(text)
+                .build();
+
+        try {
+            telegramClient.execute(message); // Sending our message object to user
+        } catch (TelegramApiException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    private void sendMessage(long chatId, String text) {
+        SendMessage message = SendMessage // Create a message object
+                .builder()
+                .chatId(chatId)
+                .text(text)
+                .build();
+
+        try {
+            telegramClient.execute(message); // Sending our message object to user
+        } catch (TelegramApiException e) {
+            log.error(e.getMessage());
+        }
+
     }
 
     @AfterBotRegistration
