@@ -28,7 +28,8 @@ dependencies {
     implementation 'org.telegram:telegrambots-springboot-longpolling-starter:7.7.1'
     implementation 'org.telegram:telegrambots-client:7.7.1'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
- 
+    implementation 'org.apache.sshd:sshd-core:2.13.1'
+
     runtimeOnly 'org.postgresql:postgresql'
 
     compileOnly 'org.projectlombok:lombok'

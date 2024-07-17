@@ -20,7 +20,7 @@ public class Account {
 
     private String privateKey;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 }

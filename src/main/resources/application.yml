@@ -13,3 +13,9 @@ spring:
   name: vpnbot
 bot:
   token: ${vpn_bot_token}
+
+server:
+  host: ${DEV_SERVER_HOST}
+  password: ${DEV_SERVER_PASSWORD}
+  public_key: ${DEV_SERVER_PUBLIC_KEY}
+  private_key: ${DEV_SERVER_PRIVATE_KEY}

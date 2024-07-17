@@ -13,7 +13,7 @@ public class User {
     @Id
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "server_id")
     private Server server;
 
